@@ -1,6 +1,9 @@
 pipeline {
-    agent any
-    stages {
+agent {
+        docker {
+            image 'python:3.10' // ou 3.11, selon ton besoin
+        }
+    }    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
