@@ -10,7 +10,7 @@ pipeline {
 
         stage('Setup Venv') {
             steps {
-                sh """
+                bat """
                 python -m venv .venv
                 call .venv\\Scripts\\activate
                 python -m pip install --upgrade pip
@@ -21,7 +21,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh """
+                bat """
                 call .venv\\Scripts\\activate
                 python -m pytest test_app.py -v
                 """
@@ -31,7 +31,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Starting Flask app locally (Windows agent) ...'
-                sh """
+                bat """
                 set FLASK_APP=app
                 call .venv\\Scripts\\activate
                 start /B python -m flask run --host=127.0.0.1 --port=5000 > flask.log 2>&1
