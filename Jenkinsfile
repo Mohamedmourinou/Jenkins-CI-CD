@@ -1,44 +1,60 @@
-pipeline {
+pipeline{
     agent any
-    stages {
-       stage('Checkout'){
-            steps{
-            git branch: 'main', url: 'https://github.com/Mohamedmourinou/Jenkins-CI-CD'
+    stages{
 
+        stage(Checkout){
+            steps{
+                git branch: 'main',
+                url:'https://github.com/Insaf-Badri/Jenkins-CI-CD.git'
             }
         }
-        stage('Build & Test') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                    args '-u root:root'
-                }
-            }
-            steps {
-                sh '''
-                python3 -m venv .venv
-                source .venv/bin/activate
+
+        stage(Setup){
+            steps{
+                bat """
+                python -m venv .venv
+
+                call .venv\\Scripts\\activate
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
-                python3 -m pytest test_app.py -v
-                '''
+                """
             }
         }
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                    args '-u root:root'
+
+        stage(Tests){
+            when{
+                not{
+                    changeset ""**/README.md""
                 }
             }
-            steps {
-                sh '''
-                export FLASK_APP=app
-                source .venv/bin/activate
-                nohup flask run --host=127.0.0.1 --port=5000 > flask.log 2>&1 &
-                echo Flask started on http://127.0.0.1:5000
-                '''
+            parallel{
+                stage(test1){
+                    steps{
+                         bat """
+                        call .venv\\Scripts\\activate
+                        python -m pytest test_app.py -v
+                        """
+                    }
+                }
+
+                stage(test2){
+                    steps{
+                         bat """
+                        call .venv\\Scripts\\activate
+                        python -m pytest test_app_2.py -v
+                        """
+                    }
+                }
             }
         }
+
+        stage(Deploy){
+             steps {
+                echo 'Starting Flask app locally using Gunicorn...'
+            }
+        }
+
     }
+
 }
+    
