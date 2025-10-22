@@ -1,9 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
+       stage('Checkout'){
+            steps{
+                git branch: 'main',
+                url:'https://github.com/Mohamedmourinou/Jenkins-CI-CD'
             }
         }
         stage('Build & Test') {
