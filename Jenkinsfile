@@ -24,7 +24,7 @@ pipeline{
         stage(Tests){
             when{
                 not{
-                    changeset ""**/README.md""
+                    changeset "**/README.md""
                 }
             }
             parallel{
