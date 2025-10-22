@@ -1,9 +1,10 @@
 pipeline {
-agent {
+    agent {
         docker {
-            image 'python:3.10' // ou 3.11, selon ton besoin
+            image 'python:3.10'
         }
-    }    stages {
+    }
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -15,7 +16,7 @@ agent {
             steps {
                 sh """
                 python3 -m venv .venv
-                call .venv\\Scripts\\activate
+                source .venv/bin/activate
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
                 """
@@ -25,7 +26,7 @@ agent {
         stage('Run Tests') {
             steps {
                 sh """
-                call .venv\\Scripts\\activate
+                source .venv/bin/activate
                 python3 -m pytest test_app.py -v
                 """
             }
@@ -33,11 +34,11 @@ agent {
 
         stage('Deploy') {
             steps {
-                echo 'Starting Flask app locally (Windows agent) ...'
+                echo 'Starting Flask app locally (Linux agent in Docker)...'
                 sh """
-                set FLASK_APP=app
-                call .venv\\Scripts\\activate
-                start /B python3 -m flask run --host=127.0.0.1 --port=5000 > flask.log 2>&1
+                export FLASK_APP=app
+                source .venv/bin/activate
+                nohup flask run --host=127.0.0.1 --port=5000 > flask.log 2>&1 &
                 echo Flask started on http://127.0.0.1:5000
                 """
             }
