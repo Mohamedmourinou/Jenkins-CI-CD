@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh '''
                 python -m venv .venv
-                source .venv/bin/activate
+                . .venv/bin/activate
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
@@ -42,7 +42,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                        source .venv/bin/activate
+                        . .venv/bin/activate
                         python -m pytest test_app.py -v
                         '''
                     }
@@ -57,7 +57,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                        source .venv/bin/activate
+                        . .venv/bin/activate
                         python -m pytest test_app_2.py -v || echo "test_app_2.py not found, skipping..."
                         '''
                     }
@@ -75,7 +75,7 @@ pipeline {
             steps {
                 sh '''
                 echo 'Starting Flask app using Gunicorn...'
-                source .venv/bin/activate
+                . .venv/bin/activate
                 nohup gunicorn -w 4 -b 127.0.0.1:5000 app:app > gunicorn.log 2>&1 &
                 echo 'Flask app started at http://127.0.0.1:5000'
                 '''
