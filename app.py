@@ -9,6 +9,7 @@ def home():
 @app.route('/hello', methods=['POST'])
 def hello():
     name = request.form.get('username','').strip()
+    print('test')
     if name:
         return render_template("index.html", message=f"Hello {name}, welcome to Jenkins CI/CD demo!", sum_result=None)
     else:
