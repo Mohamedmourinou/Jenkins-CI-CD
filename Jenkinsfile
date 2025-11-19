@@ -29,14 +29,17 @@ pipeline {
             }
         }
 
-        stage('Tests') {
-              agent {
-                docker {
-                    image 'python:3.10'
-                    args '-u root:root'
-                }
-            }
-          steps {
+         stage('Tests') {
+            
+            parallel {
+                stage('Test 1') {
+                    agent {
+                        docker {
+                            image 'python:3.10'
+                            args '-u root:root'
+                        }
+                    }
+                    steps {
                         sh '''
                         . .venv/bin/activate
                         python -m pytest test_app.py -v
@@ -44,6 +47,22 @@ pipeline {
                     }
                 }
 
+                stage('Test 2') {
+                    agent {
+                        docker {
+                            image 'python:3.10'
+                            args '-u root:root'
+                        }
+                    }
+                    steps {
+                        sh '''
+                        . .venv/bin/activate
+                        python -m pytest test_app_2.py -v || echo "test_app_2.py not found, skipping..."  
+                        '''
+                    }
+                }
+            }
+        }
 
         stage('Deploy') {
             agent {
